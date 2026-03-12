@@ -31,3 +31,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Python / ML artifacts ###
+__pycache__/
+*.pyc
+outputs/final_model.pkl
+outputs/test_split.csv
+outputs/metrics.txt
+outputs/error_analysis.txt
