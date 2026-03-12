@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - BOUDOUR Hanine System</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2e5036 0%, #123117 100%);
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 2rem;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 3rem 2.5rem;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h1 {
+            color: #123117;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 0.875rem;
+            font-size: 1rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #2e5036 0%, #123117 100%);
+            border: none;
+            color: white;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: block;
+            text-align: center;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(18, 49, 23, 0.4);
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .test-accounts {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            text-align: left;
+        }
+
+        .test-accounts h4 {
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+            color: #374151;
+        }
+
+        .test-accounts ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .test-accounts li {
+            padding: 0.375rem 0;
+            color: #6b7280;
+            font-family: 'Courier New', monospace;
+        }
+
+        .test-accounts li strong {
+            color: #4f46e5;
+            font-weight: 600;
+        }
+
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        .alert-error {
+            background-color: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-success {
+            background-color: #d1fae5;
+            color: #059669;
+            border: 1px solid #a7f3d0;
+        }
+
+
+
+        .logo-animate {
+            animation: float 6s ease-in-out infinite;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-animate:hover {
+            transform: scale(1.05);
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div
+                    style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
+                    <div class="logo-animate"
+                        style="width: 250px; height: 250px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                        <img src="https://ik.imagekit.io/vnn357ctl/Univ-Logo.png" alt="Logo"
+                            style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
+                    </div>
+                </div>
+                <h1 style="font-size: 1.75rem;">BOUDOUR Hanine</h1>
+                <p style="color: #2e5036; font-weight: 600;">Student Management Platform</p>
+            </div>
+
+            <div th:if="${param.error}" class="alert alert-error" style="font-weight: bold;">❌ LOGIN FAILED: Please
+                check your typing. </div>
+            <div th:if="${param.logout}" class="alert alert-success">You have been logged out successfully. </div>
+
+            <form th:action="@{/login}" method="post" autocomplete="off">
+                <div class="form-group"><label for="username" class="form-label">Username</label><input type="text"
+                        id="username" name="username" class="form-control" placeholder="Username" required autofocus
+                        autocomplete="off"></div>
+                <div class="form-group"><label for="password" class="form-label">Password</label><input type="password"
+                        id="password" name="password" class="form-control" placeholder="Password" required
+                        autocomplete="off"></div>
+                <div
+                    style="margin-bottom: 1.5rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; color: #6b7280;">
+                    <input type="checkbox" id="showPass" onclick="togglePass()"><label for="showPass">Show what
+                        I am typing</label>
+                </div><button type="submit" class="btn-login">Sign In </button>
+            </form>
+            <script>function togglePass() {
+                    var x = document.getElementById("password");
+
+                    if (x.type === "password") {
+                        x.type = "text";
+                    }
+
+                    else {
+                        x.type = "password";
+                    }
+                }
+
+            </script>
+            <div class="login-footer">
+                <p style="margin: 0; font-size: 0.8rem; color: #9ca3af;">&copy;
+                    2024 BOUDOUR Hanine System</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+</html>

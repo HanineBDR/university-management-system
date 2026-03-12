@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - BOUDOUR Hanine</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container flex justify-between align-center">
+            <div class="navbar-brand" style="display: flex; align-items: center; gap: 0.75rem;">
+                <div style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
+                    <img src="https://ik.imagekit.io/vnn357ctl/Univ-Logo.png" alt="Logo"
+                        style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <div>
+                    <div style="font-size: 1.25rem; font-weight: 700;">BOUDOUR Hanine</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 500;">Administrator
+                        Portal</div>
+                </div>
+            </div>
+            <div id="userInfo"></div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Welcome Card -->
+        <div class="card">
+            <h2>👋 Welcome, Administrator!</h2>
+            <p>Manage users, students, teachers, and view all system data.</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            <div class="card" style="text-align: center;">
+                <h3 style="color: var(--admin-color); font-size: 2.5rem; margin-bottom: 0.5rem;" id="totalUsers">-</h3>
+                <p style="margin: 0;">Total Users</p>
+            </div>
+            <div class="card" style="text-align: center;">
+                <h3 style="color: var(--teacher-color); font-size: 2.5rem; margin-bottom: 0.5rem;" id="totalTeachers">-
+                </h3>
+                <p style="margin: 0;">Teachers</p>
+            </div>
+            <div class="card" style="text-align: center;">
+                <h3 style="color: var(--student-color); font-size: 2.5rem; margin-bottom: 0.5rem;" id="totalStudents">-
+                </h3>
+                <p style="margin: 0;">Students</p>
+            </div>
+            <div class="card" style="text-align: center;">
+                <h3 style="color: var(--primary-color); font-size: 2.5rem; margin-bottom: 0.5rem;" id="totalMarks">-
+                </h3>
+                <p style="margin: 0;">Total Marks</p>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="card">
+            <div style="border-bottom: 2px solid var(--border-color); margin-bottom: 1.5rem;">
+                <div style="display: flex; gap: 1rem;">
+                    <button class="tab-btn active" onclick="switchTab('users')">Users</button>
+                    <button class="tab-btn" onclick="switchTab('marks')">Marks</button>
+                </div>
+            </div>
+
+            <!-- Users Tab -->
+            <div id="usersTab" class="tab-content active">
+                <div class="card-header" style="justify-content: space-between; align-items: center;">
+                    <div class="flex align-center gap-md">
+                        <h3 class="card-title" style="margin: 0;">All Users</h3>
+                        <select id="roleFilter" class="form-control" style="width: auto; padding: 0.5rem;"
+                            onchange="filterUsers()">
+                            <option value="ALL">All Roles</option>
+                            <option value="ADMIN">Admins</option>
+                            <option value="TEACHER">Teachers</option>
+                            <option value="STUDENT">Students</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="showCreateUserModal()">+ Create User</button>
+                </div>
+                <div id="usersTable"></div>
+            </div>
+
+
+
+            <!-- Marks Tab -->
+            <div id="marksTab" class="tab-content hidden">
+                <div class="card-header">
+                    <h3 class="card-title">All Marks</h3>
+                </div>
+                <div id="marksTable"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create User Modal (Simple version - will be shown as overlay) -->
+    <div id="createUserModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New User</h3>
+                <button onclick="hideCreateUserModal()"
+                    style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <form id="createUserForm">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" id="newUsername" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" id="newEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="newPassword" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="newFullName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <select id="newRole" class="form-control" required>
+                        <option value="">Select Role</option>
+                        <option value="ADMIN">Admin</option>
+                        <option value="TEACHER">Teacher</option>
+                        <option value="STUDENT">Student</option>
+                    </select>
+                </div>
+                <div class="flex gap-md justify-end">
+                    <button type="button" class="btn btn-outline" onclick="hideCreateUserModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="editUserModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit User</h3>
+                <button onclick="hideEditUserModal()"
+                    style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <form id="editUserForm">
+                <input type="hidden" id="editUserId">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" id="editUsername" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" id="editEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="editFullName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">New Password (leave blank to keep current)</label>
+                    <input type="password" id="editPassword" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <select id="editRole" class="form-control" required>
+                        <option value="ADMIN">Admin</option>
+                        <option value="TEACHER">Teacher</option>
+                        <option value="STUDENT">Student</option>
+                    </select>
+                </div>
+                <div class="flex gap-md justify-end">
+                    <button type="button" class="btn btn-outline" onclick="hideEditUserModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: block;
+        }
+
+        .tab-content.hidden {
+            display: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal:not(.hidden) {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+
+    <script src="/js/api.js"></script>
+    <script>
+        // Load initial data
+        document.addEventListener('DOMContentLoaded', function () {
+            displayUserInfo();
+            loadStats();
+            loadUsers();
+        });
+
+        // Switch tabs
+        function switchTab(tab) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+            // Show selected tab
+            document.getElementById(tab + 'Tab').classList.remove('hidden');
+            event.target.classList.add('active');
+
+            // Load data for tab
+            if (tab === 'users') loadUsers();
+            else if (tab === 'marks') loadMarks();
+        }
+
+        // Load stats
+        async function loadStats() {
+            try {
+                const [users, students, teachers, marks] = await Promise.all([
+                    API.get('/api/admin/users'),
+                    API.get('/api/admin/students'),
+                    API.get('/api/admin/teachers'),
+                    API.get('/api/admin/marks')
+                ]);
+
+                document.getElementById('totalUsers').textContent = users.length;
+                document.getElementById('totalStudents').textContent = students.length;
+                document.getElementById('totalTeachers').textContent = teachers.length;
+                document.getElementById('totalMarks').textContent = marks.length;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // Global users store
+        let allUsers = [];
+
+        // Load users
+
+        async function loadUsers() {
+            showLoading('usersTable');
+            try {
+                const users = await API.get('/api/admin/users');
+                allUsers = users; // Store globally
+                renderUsers(users);
+                loadStats(); // Update stats when loading users
+            } catch (error) {
+                showError('Failed to load users', 'usersTable');
+            }
+        }
+
+        // Render users table
+        function renderUsers(users) {
+            let html = '<div class="table-container"><table><thead><tr>';
+            html += '<th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th>';
+            html += '</tr></thead><tbody>';
+
+            if (users.length === 0) {
+                html += '<tr><td colspan="6" style="text-align:center;">No users found matching filters.</td></tr>';
+            } else {
+                users.forEach(user => {
+                    const roleClass = user.role.toLowerCase();
+                    const statusBadge = user.enabled ?
+                        '<span class="badge badge-success">Active</span>' :
+                        '<span class="badge badge-warning">Disabled</span>';
+
+                    html += `<tr>
+                        <td>${user.id}</td>
+                        <td><strong>${user.username}</strong></td>
+                        <td>${user.email}</td>
+                        <td><span class="badge badge-${roleClass}">${user.role}</span></td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline" onclick="toggleUserStatus(${user.id}, ${!user.enabled})">
+                                ${user.enabled ? 'Disable' : 'Enable'}
+                            </button>
+                            <button class="btn btn-sm btn-outline" onclick='showEditUserModal(${JSON.stringify(user).replace(/'/g, "&apos;")})'>Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})">Delete</button>
+                        </td>
+                    </tr>`;
+                });
+            }
+
+            html += '</tbody></table></div>';
+            document.getElementById('usersTable').innerHTML = html;
+        }
+
+        // Filter users
+        function filterUsers() {
+            const role = document.getElementById('roleFilter').value;
+            if (role === 'ALL') {
+                renderUsers(allUsers);
+            } else {
+                const filtered = allUsers.filter(u => u.role === role);
+                renderUsers(filtered);
+            }
+        }
+
+
+
+        // Load marks
+        async function loadMarks() {
+            showLoading('marksTable');
+            try {
+                const marks = await API.get('/api/admin/marks');
+                let html = '<div class="table-container"><table><thead><tr>';
+                html += '<th>Student</th><th>Module</th><th>Teacher</th><th>Score</th><th>Date</th>';
+                html += '</tr></thead><tbody>';
+
+                marks.forEach(mark => {
+                    html += `<tr>
+                        <td>${mark.student.fullName}</td>
+                        <td>${mark.module.name} (${mark.module.code})</td>
+                        <td>${mark.teacher.fullName}</td>
+                        <td>${formatScore(mark.score)}</td>
+                        <td>${formatDate(mark.markDate)}</td>
+                    </tr>`;
+                });
+
+                html += '</tbody></table></div>';
+                document.getElementById('marksTable').innerHTML = html;
+            } catch (error) {
+                showError('Failed to load marks', 'marksTable');
+            }
+        }
+
+        // Toggle user status
+        async function toggleUserStatus(userId, enabled) {
+            try {
+                await API.put(`/api/admin/users/${userId}/enable`, { enabled });
+                showSuccess(`User ${enabled ? 'enabled' : 'disabled'} successfully`);
+                loadUsers();
+                loadStats();
+            } catch (error) {
+                showError(`Failed to ${enabled ? 'enable' : 'disable'} user: ` + error.message);
+            }
+        }
+
+        // Delete user
+        async function deleteUser(userId) {
+            if (!confirm('Are you sure you want to delete this user?')) return;
+
+            try {
+                await API.delete(`/api/admin/users/${userId}`);
+                showSuccess('User deleted successfully');
+                loadUsers();
+                loadStats();
+            } catch (error) {
+                showError('Failed to delete user: ' + error.message);
+            }
+        }
+
+        // Show create user modal
+        function showCreateUserModal() {
+            document.getElementById('createUserModal').classList.remove('hidden');
+        }
+
+        // Hide create user modal
+        function hideCreateUserModal() {
+            document.getElementById('createUserModal').classList.add('hidden');
+            document.getElementById('createUserForm').reset();
+        }
+
+        // Create user form submission
+        document.getElementById('createUserForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const userData = {
+                username: document.getElementById('newUsername').value,
+                email: document.getElementById('newEmail').value,
+                password: document.getElementById('newPassword').value,
+                fullName: document.getElementById('newFullName').value,
+                role: document.getElementById('newRole').value
+            };
+
+            try {
+                const response = await API.post('/api/admin/users', userData);
+                showSuccess('User created successfully!');
+                hideCreateUserModal();
+                loadUsers();
+                loadStats();
+            } catch (error) {
+                console.error('[ERROR] User creation failed:', error);
+                showError('Failed to create user: ' + error.message);
+            }
+        });
+
+        // Show edit user modal
+        async function showEditUserModal(user) {
+            document.getElementById('editUserId').value = user.id;
+            document.getElementById('editUsername').value = user.username;
+            document.getElementById('editEmail').value = user.email;
+            document.getElementById('editRole').value = user.role;
+            document.getElementById('editPassword').value = ''; // Reset password field
+
+            // Try to find the full name from the relevant profile list
+            // For simplicity, we'll try to get it from student/teacher lists if they are loaded
+            // or just allow the user to fill it. A better way would be a specific API.
+            // Let's check the row if we can.
+
+            // Try to fetch full name from backend for student/teacher
+            if (user.role === 'STUDENT' || user.role === 'TEACHER') {
+                try {
+                    const profile = await API.get(`/api/admin/${user.role.toLowerCase()}s`);
+                    const userProfile = profile.find(p => p.user && p.user.id === user.id);
+                    if (userProfile) {
+                        document.getElementById('editFullName').value = userProfile.fullName;
+                    }
+                } catch (e) {
+                    console.error('Could not fetch full name', e);
+                }
+            } else {
+                document.getElementById('editFullName').value = 'Admin User';
+            }
+
+            document.getElementById('editUserModal').classList.remove('hidden');
+        }
+
+        // Hide edit user modal
+        function hideEditUserModal() {
+            document.getElementById('editUserModal').classList.add('hidden');
+            document.getElementById('editUserForm').reset();
+        }
+
+        // Edit user form submission
+        document.getElementById('editUserForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const userId = document.getElementById('editUserId').value;
+            const userData = {
+                username: document.getElementById('editUsername').value,
+                email: document.getElementById('editEmail').value,
+                fullName: document.getElementById('editFullName').value,
+                role: document.getElementById('editRole').value
+            };
+
+            const password = document.getElementById('editPassword').value;
+            if (password) {
+                userData.password = password;
+            }
+
+            try {
+                await API.put(`/api/admin/users/${userId}`, userData);
+                showSuccess('User updated successfully!');
+                hideEditUserModal();
+                loadUsers();
+                loadStats();
+            } catch (error) {
+                console.error('[ERROR] User update failed:', error);
+                showError('Failed to update user: ' + error.message);
+            }
+        });
+    </script>
+</body>
+
+</html>

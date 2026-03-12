@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+    <div class="dashboard">
+        <h1>User Dashboard</h1>
+
+        <div class="user-info">
+            <p><strong>Welcome back!</strong></p>
+            <p>Username: <strong th:text="${username}">User</strong></p>
+            <p>Role: <strong>USER</strong></p>
+        </div>
+
+
+
+        <div class="actions">
+            <a href="/" class="btn-primary">Home</a>
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-danger">Logout</button>
+            </form>
+        </div>
+
+        <!-- Admin can see a link to admin dashboard -->
+        <div class="actions" th:if="${isAdmin}" style="margin-top: 15px;">
+            <a href="/admin" class="btn-secondary">Go to Admin Dashboard</a>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boudour Hanine - University Portal</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #123117;
+            --primary-dark: #0a1c0d;
+            --secondary: #2e5036;
+            --accent: #d4af37;
+            /* Gold for prestigious feel */
+            --text-main: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f3f4f6;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            color: var(--text-main);
+            background-color: white;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        h1,
+        h2,
+        h3,
+        .logo {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .navbar {
+            background-color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--primary);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+            margin-left: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .hero {
+            background: linear-gradient(rgba(18, 49, 23, 0.9), rgba(18, 49, 23, 0.95)), url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 6rem 1rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.875rem 2rem;
+            border-radius: 2px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+        }
+
+        .btn-gold {
+            background-color: var(--accent);
+            color: #fff;
+            border: 2px solid var(--accent);
+        }
+
+        .btn-gold:hover {
+            background-color: white;
+            color: var(--accent);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.25rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-title .line {
+            width: 60px;
+            height: 3px;
+            background-color: var(--accent);
+            margin: 0 auto;
+        }
+
+        .services {
+            padding: 5rem 1rem;
+            background-color: white;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            padding: 2.5rem;
+            border-radius: 4px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .icon-circle {
+            width: 70px;
+            height: 70px;
+            background-color: var(--bg-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: var(--primary);
+            font-size: 2rem;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .service-card:hover .icon-circle {
+            background-color: var(--primary);
+            color: var(--accent);
+        }
+
+        .service-card h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .footer {
+            margin-top: auto;
+            background: var(--primary-dark);
+            color: white;
+            padding: 3rem 1rem;
+            text-align: center;
+            border-top: 4px solid var(--accent);
+        }
+
+        .footer p {
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">
+            <img src="https://ik.imagekit.io/vnn357ctl/Univ-Logo.png" alt="University Logo" style="height: 120px;">
+            <span>BOUDOUR Hanine<br><small
+                    style="font-size: 0.6em; font-family: 'Inter'; text-transform: uppercase; letter-spacing: 2px; color: var(--text-light);">University</small></span>
+        </a>
+        <div class="nav-links">
+            <a href="/academics">Academics</a>
+            <a href="/admissions">Admissions</a>
+            <a href="/research">Research</a>
+            <a href="/login" style="color: var(--primary); font-weight: 700;">My Portal</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <h1>Excellence in Education</h1>
+        <p>Empowering the next generation of leaders through innovation, integrity, and academic rigor in our Student
+            Management System.</p>
+        <a href="/login" class="btn btn-gold">Access Student Portal</a>
+    </header>
+
+    <section class="services">
+        <div class="section-title">
+            <h2>Academic Services</h2>
+            <div class="line"></div>
+        </div>
+
+        <div class="card-grid">
+            <div class="service-card">
+                <div class="icon-circle">📊</div>
+                <h3>Academic Records</h3>
+                <p>Comprehensive tracking of student performance, grades, and academic milestones in real-time.</p>
+            </div>
+            <div class="service-card">
+                <div class="icon-circle">👨‍🏫</div>
+                <h3>Faculty Resources</h3>
+                <p>Tools for educators to manage curriculum, submit assessments, and engage with the student body.</p>
+            </div>
+            <div class="service-card">
+                <div class="icon-circle">🎓</div>
+                <h3>Student Life</h3>
+                <p>Centralized hub for students to access schedules, results, and university-wide announcements.</p>
+            </div>
+            <div class="service-card">
+                <div class="icon-circle">📚</div>
+                <h3>Digital Library</h3>
+                <p>24/7 access to thousands of academic journals, e-books, and research databases for all students.</p>
+            </div>
+            <div class="service-card">
+                <div class="icon-circle">🔬</div>
+                <h3>Research & Innovation</h3>
+                <p>State-of-the-art laboratories and funding opportunities for groundbreaking student-led research.</p>
+            </div>
+            <div class="service-card">
+                <div class="icon-circle">💼</div>
+                <h3>Career Development</h3>
+                <p>Guidance, internships, and networking events to launch successful careers after graduation.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <h3>BOUDOUR Hanine University</h3>
+        <p>&copy; 2024 All Rights Reserved. Excellence since 2024.</p>
+    </footer>
+</body>
+
+</html>

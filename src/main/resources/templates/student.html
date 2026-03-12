@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - BOUDOUR Hanine</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container flex justify-between align-center">
+            <div class="navbar-brand" style="display: flex; align-items: center; gap: 0.75rem;">
+                <div style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
+                    <img src="https://ik.imagekit.io/vnn357ctl/Univ-Logo.png" alt="Logo"
+                        style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <div>
+                    <div style="font-size: 1.25rem; font-weight: 700;">BOUDOUR Hanine</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 500;">Student Portal
+                    </div>
+                </div>
+            </div>
+            <div id="userInfo"></div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Welcome Card -->
+        <div class="card">
+            <h2>👋 Welcome, Student!</h2>
+            <p>View your profile, marks, and academic performance.</p>
+        </div>
+
+        <!-- Profile Card -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">👤 My Profile</h3>
+            </div>
+            <div id="profileInfo"></div>
+        </div>
+
+        <!-- Academic Report Card -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">📊 Academic Performance</h3>
+            </div>
+            <div id="reportInfo"></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="card">
+            <div class="tabs-container">
+                <div class="tabs-list">
+                    <button class="tab-btn active" id="marksNavBtn" onclick="switchTab('marks', event)">My
+                        Marks</button>
+                    <button class="tab-btn" id="reportsNavBtn" onclick="switchTab('reports', event)">Report
+                        History</button>
+                    <button class="tab-btn hidden" id="submitReportNavBtn"
+                        onclick="switchTab('submitReport', event)">Submit Report</button>
+                </div>
+            </div>
+
+            <!-- Marks Tab -->
+            <div id="marksTab" class="tab-content active">
+                <div class="card-header">
+                    <h3 class="card-title">📝 My Marks</h3>
+                </div>
+                <div id="marksTable"></div>
+            </div>
+
+            <!-- Submit Report Tab -->
+            <div id="submitReportTab" class="tab-content hidden">
+                <div class="card card-premium">
+                    <div class="card-header">
+                        <h3 class="card-title">✍️ Submit Mark Report</h3>
+                        <button class="btn btn-outline btn-sm" onclick="switchTab('marks')">Back to Marks</button>
+                    </div>
+                    <div class="card-body">
+                        <form id="reportForm" class="premium-form">
+                            <div class="form-grid">
+                                <div class="form-group" id="markSelectorContainer">
+                                    <label class="form-label">Select Mark</label>
+                                    <select id="reportMarkId" class="form-control" onchange="onMarkSelectChange()"
+                                        required>
+                                        <option value="">Select a mark to report...</option>
+                                    </select>
+                                </div>
+                                <div id="reportMarkDetails" class="hidden form-grid-sub">
+                                    <div class="form-group">
+                                        <label class="form-label">Module</label>
+                                        <input type="text" id="reportModuleName" class="form-control" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Current Score</label>
+                                        <input type="text" id="reportCurrentScore" class="form-control" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label class="form-label">Reason for Report</label>
+                                <textarea id="reportReason" class="form-control" rows="5" required
+                                    placeholder="Please provide a detailed explanation of why you are reporting this mark..."></textarea>
+                            </div>
+                            <div class="flex gap-md justify-end mt-4">
+                                <button type="button" class="btn btn-outline"
+                                    onclick="switchTab('marks')">Cancel</button>
+                                <button type="submit" class="btn btn-primary btn-lg">Submit Report</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div id="reportsTab" class="tab-content hidden">
+                <div class="card-header">
+                    <h3 class="card-title">🚩 Report History</h3>
+                </div>
+                <div id="reportsTable"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Modal Removed -->
+
+    <style>
+        .profile-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .profile-item {
+            padding: 1.25rem;
+            background: var(--bg-color);
+            border-radius: var(--radius-md);
+            border-left: 4px solid var(--student-color);
+        }
+
+        .profile-item label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .profile-item .value {
+            font-size: 1.125rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--student-color) 0%, var(--primary-color) 100%);
+            border-radius: var(--radius-lg);
+            color: white;
+        }
+
+        .stat-card .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        .stat-card.success {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+        }
+
+        .stat-card.warning {
+            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+        }
+
+        .stat-card.info {
+            background: linear-gradient(135deg, var(--info) 0%, #1d4ed8 100%);
+        }
+
+        .card-premium {
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        .premium-form {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-grid-sub {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(37, 99, 235, 0.03);
+            border-radius: var(--radius-lg);
+            border: 1px dashed var(--student-color);
+        }
+
+        .tabs-container {
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .tabs-list {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 0.75rem 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            position: relative;
+            transition: all var(--transition-fast);
+        }
+
+        .tab-btn:hover {
+            color: var(--student-color);
+        }
+
+        .tab-btn.active {
+            color: var(--student-color);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -0.6rem;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--student-color);
+            border-radius: 3px;
+        }
+    </style>
+
+    <script src="/js/api.js"></script>
+    <script>
+        let allMarks = [];
+
+        // Load initial data
+        document.addEventListener('DOMContentLoaded', function () {
+            displayUserInfo();
+            loadProfile();
+            loadReport();
+            loadMarks();
+            loadReports();
+        });
+
+        // Switch tabs
+        function switchTab(tab, event) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+            const targetTab = document.getElementById(tab + 'Tab');
+            if (targetTab) {
+                targetTab.classList.remove('hidden');
+            }
+
+            // Sync navigation buttons
+            if (tab === 'marks') document.getElementById('marksNavBtn').classList.add('active');
+            else if (tab === 'reports') document.getElementById('reportsNavBtn').classList.add('active');
+            else if (tab === 'submitReport') {
+                const nav = document.getElementById('submitReportNavBtn');
+                nav.classList.remove('hidden');
+                nav.classList.add('active');
+            }
+
+            if (event) event.target.classList.add('active');
+
+            if (tab === 'marks') loadMarks();
+            else if (tab === 'reports') loadReports();
+        }
+
+        // Open report form
+        function openReportForm(mark = null) {
+            switchTab('submitReport');
+            showReportFormContent(mark);
+        }
+
+        // Load profile
+        async function loadProfile() {
+            showLoading('profileInfo');
+            try {
+                const profile = await API.get('/api/student/profile');
+
+                const html = `
+                    <div class="profile-info">
+                        <div class="profile-item">
+                            <label>Full Name</label>
+                            <div class="value">${profile.fullName}</div>
+                        </div>
+                        <div class="profile-item">
+                            <label>Username</label>
+                            <div class="value">${profile.username}</div>
+                        </div>
+                        <div class="profile-item">
+                            <label>Email</label>
+                            <div class="value">${profile.email}</div>
+                        </div>
+                        <div class="profile-item">
+                            <label>Enrollment Date</label>
+                            <div class="value">${formatDate(profile.enrollmentDate)}</div>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('profileInfo').innerHTML = html;
+            } catch (error) {
+                showError('Failed to load profile', 'profileInfo');
+            }
+        }
+
+        // Load academic report
+        async function loadReport() {
+            showLoading('reportInfo');
+            try {
+                const report = await API.get('/api/student/report');
+
+                let averageClass = 'info';
+                if (report.average >= 16) averageClass = 'success';
+                else if (report.average >= 12) averageClass = 'info';
+                else if (report.average >= 10) averageClass = 'warning';
+                else averageClass = 'warning';
+
+                const html = `
+                    <div class="stats-grid">
+                        <div class="stat-card ${averageClass}">
+                            <div class="value">${report.average.toFixed(2)}</div>
+                            <div class="label">Average Score</div>
+                        </div>
+                        <div class="stat-card success">
+                            <div class="value">${report.highest.toFixed(2)}</div>
+                            <div class="label">Highest Score</div>
+                        </div>
+                        <div class="stat-card warning">
+                            <div class="value">${report.lowest.toFixed(2)}</div>
+                            <div class="label">Lowest Score</div>
+                        </div>
+                        <div class="stat-card info">
+                            <div class="value">${report.totalMarks}</div>
+                            <div class="label">Total Modules</div>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('reportInfo').innerHTML = html;
+            } catch (error) {
+                showError('Failed to load report', 'reportInfo');
+            }
+        }
+
+        // Load marks
+        async function loadMarks() {
+            showLoading('marksTable');
+            try {
+                const marks = await API.get('/api/student/marks');
+                allMarks = marks;
+
+                if (marks.length === 0) {
+                    document.getElementById('marksTable').innerHTML = `
+                        <div class="alert alert-info">No marks recorded yet.</div>
+                    `;
+                    return;
+                }
+
+                let html = '<div class="table-container"><table><thead><tr>';
+                html += '<th>Module</th><th>Code</th><th>Score</th><th>Date</th><th>Teacher</th><th>Comments</th><th>Action</th>';
+                html += '</tr></thead><tbody>';
+
+                marks.forEach(mark => {
+                    html += `<tr>
+                        <td><strong>${mark.module.name}</strong></td>
+                        <td><span class="badge badge-student">${mark.module.code}</span></td>
+                        <td>${formatScore(mark.score)}</td>
+                        <td>${formatDate(mark.date)}</td>
+                        <td>${mark.teacher.fullName}</td>
+                        <td>${mark.comments || '-'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline" onclick='openReportForm(${JSON.stringify(mark).replace(/'/g, "&apos;")})'>Report</button>
+                        </td>
+                    </tr>`;
+                });
+
+                html += '</tbody></table></div>';
+                document.getElementById('marksTable').innerHTML = html;
+            } catch (error) {
+                showError('Failed to load marks', 'marksTable');
+            }
+        }
+
+        // Load reports
+        async function loadReports() {
+            showLoading('reportsTable');
+            try {
+                const reports = await API.get('/api/student/reports');
+
+                if (reports.length === 0) {
+                    document.getElementById('reportsTable').innerHTML = `
+                        <div class="alert alert-info">No reports submitted yet.</div>
+                    `;
+                    return;
+                }
+
+                let html = '<div class="table-container"><table><thead><tr>';
+                html += '<th>Module</th><th>Original Score</th><th>Reason</th><th>Status</th><th>Teacher Comment</th><th>Date</th><th>Action</th>';
+                html += '</tr></thead><tbody>';
+
+                reports.forEach(report => {
+                    const statusClass = report.status.toLowerCase();
+                    const canDelete = report.status === 'WAITING';
+
+                    html += `<tr>
+                        <td><strong>${report.mark.module.name}</strong></td>
+                        <td>${formatScore(report.mark.score)}</td>
+                        <td>${report.reason}</td>
+                        <td><span class="badge badge-${statusClass}">${report.status}</span></td>
+                        <td>${report.teacherComment || '-'}</td>
+                        <td>${new Date(report.reportDate).toLocaleDateString()} ${new Date(report.reportDate).toLocaleTimeString()}</td>
+                        <td>
+                            ${canDelete ? `<button class="btn btn-sm btn-danger" onclick="deleteReport(${report.id})">Delete</button>` : '-'}
+                        </td>
+                    </tr>`;
+                });
+
+                html += '</tbody></table></div>';
+                document.getElementById('reportsTable').innerHTML = html;
+            } catch (error) {
+                showError('Failed to load reports', 'reportsTable');
+            }
+        }
+
+        // Mark select handling
+        function onMarkSelectChange() {
+            const markId = document.getElementById('reportMarkId').value;
+            if (markId) {
+                const mark = allMarks.find(m => m.id == markId);
+                if (mark) {
+                    document.getElementById('reportModuleName').value = mark.module.name;
+                    document.getElementById('reportCurrentScore').value = mark.score;
+                    document.getElementById('reportMarkDetails').classList.remove('hidden');
+                }
+            } else {
+                document.getElementById('reportMarkDetails').classList.add('hidden');
+            }
+        }
+
+        // Show report form logic
+        function showReportFormContent(mark = null) {
+            const select = document.getElementById('reportMarkId');
+            const selectorContainer = document.getElementById('markSelectorContainer');
+            const details = document.getElementById('reportMarkDetails');
+
+            // Clear previous
+            select.innerHTML = '<option value="">Select a mark to report...</option>';
+            document.getElementById('reportReason').value = '';
+
+            if (mark) {
+                // Direct report from row
+                selectorContainer.classList.add('hidden');
+                details.classList.remove('hidden');
+
+                const option = document.createElement('option');
+                option.value = mark.id;
+                option.text = `${mark.module.name} (${mark.score})`;
+                option.selected = true;
+                select.appendChild(option);
+
+                document.getElementById('reportModuleName').value = mark.module.name;
+                document.getElementById('reportCurrentScore').value = mark.score;
+            } else {
+                // General report
+                selectorContainer.classList.remove('hidden');
+                details.classList.add('hidden');
+
+                allMarks.forEach(m => {
+                    const option = document.createElement('option');
+                    option.value = m.id;
+                    option.text = `${m.module.name} - Score: ${m.score}`;
+                    select.appendChild(option);
+                });
+            }
+        }
+
+        // Report form submission
+        document.getElementById('reportForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const reportData = {
+                markId: document.getElementById('reportMarkId').value,
+                reason: document.getElementById('reportReason').value
+            };
+
+            try {
+                await API.post('/api/student/reports', reportData);
+                showSuccess('Report submitted successfully!');
+                switchTab('reports');
+            } catch (error) {
+                showError('Failed to submit report: ' + error.message);
+            }
+        });
+
+        // Delete report
+        async function deleteReport(id) {
+            console.log('deleteReport called for ID:', id);
+            // Confirm removed as requested
+
+            try {
+                console.log('Sending POST request to /api/student/reports/delete/' + id);
+                // Using POST instead of DELETE to avoid potential method restrictions or routing issues
+                await API.post(`/api/student/reports/delete/${id}`, {});
+                console.log('Delete successful');
+                showSuccess('Report deleted successfully');
+                loadReports();
+            } catch (error) {
+                console.error('Delete failed:', error);
+                showError('Failed to delete report: ' + error.message);
+            }
+        }
+    </script>
+</body>
+
+</html>
