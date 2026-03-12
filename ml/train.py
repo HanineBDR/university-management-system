@@ -18,6 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_PATH = BASE_DIR / "data" / "student_risk_dataset.csv"
 OUTPUT_DIR = BASE_DIR / "outputs"
 MODEL_PATH = OUTPUT_DIR / "final_model.pkl"
+TEST_SPLIT_PATH = OUTPUT_DIR / "test_split.csv"
 
 # Use only features that do not leak the target.
 FEATURE_COLUMNS = [
@@ -56,6 +57,26 @@ def main():
     model = LogisticRegression(max_iter=1000, random_state=42)
     model.fit(X_train, y_train)
 
+    # Save the held-out test split so evaluation can use only unseen rows.
+    test_split_df = X_test.copy()
+    test_split_df[TARGET_COLUMN] = y_test.values
+
+    # Keep extra columns that help with interpretation if they exist in the dataset.
+    if "student_id" in df.columns:
+        test_split_df["student_id"] = df.loc[X_test.index, "student_id"].values
+    if "avg_score" in df.columns:
+        test_split_df["avg_score"] = df.loc[X_test.index, "avg_score"].values
+
+    # Reorder columns to keep the saved file easy to read.
+    saved_columns = FEATURE_COLUMNS.copy()
+    saved_columns.append(TARGET_COLUMN)
+    if "student_id" in test_split_df.columns:
+        saved_columns.append("student_id")
+    if "avg_score" in test_split_df.columns:
+        saved_columns.append("avg_score")
+    test_split_df = test_split_df[saved_columns]
+    test_split_df.to_csv(TEST_SPLIT_PATH, index=False)
+
     # Predict on the test set and compute basic classification metrics.
     y_pred = model.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
@@ -67,6 +88,7 @@ def main():
     joblib.dump(model, MODEL_PATH)
 
     print(f"Model saved to: {MODEL_PATH}")
+    print(f"Test split saved to: {TEST_SPLIT_PATH}")
     print(f"accuracy={accuracy:.4f}")
     print(f"precision={precision:.4f}")
     print(f"recall={recall:.4f}")
