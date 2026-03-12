@@ -297,3 +297,53 @@ server.port=8081
 ## 📄 License
 
 This project is for educational purposes.
+
+## ML Extension: Student Academic Risk Prediction
+
+This repository also includes a small Python machine learning extension stored separately at the project root. Its goal is to predict whether a student is academically at risk from simple academic indicators generated from the existing university management data.
+
+**Dataset path**
+
+- `data/student_risk_dataset.csv`
+
+**Target definition**
+
+- `at_risk = 1` if `avg_score < 10`
+- `at_risk = 0` otherwise
+
+**Feature list**
+
+- `enrollment_year`
+- `num_modules`
+- `num_marks`
+- `min_score`
+- `max_score`
+- `num_reports`
+
+**Windows PowerShell commands**
+
+If Python is already available in PowerShell:
+
+```powershell
+python ml/build_dataset.py
+python ml/train.py
+python ml/evaluate.py
+```
+
+If you need to call Python using its full path:
+
+```powershell
+& "C:\Path\To\Python\python.exe" ml/build_dataset.py
+& "C:\Path\To\Python\python.exe" ml/train.py
+& "C:\Path\To\Python\python.exe" ml/evaluate.py
+```
+
+**Output files produced**
+
+- `outputs/final_model.pkl`
+- `outputs/metrics.txt`
+- `outputs/error_analysis.txt`
+
+**Leakage note**
+
+`avg_score` is excluded from the training features because the target label is derived from it. Using `avg_score` as an input feature would create feature leakage and make the model evaluation unreliable.
